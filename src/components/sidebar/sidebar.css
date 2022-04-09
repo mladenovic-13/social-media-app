@@ -2,6 +2,8 @@
   flex: 3.5;
   height: calc(100vh - 50px);
   overflow-y: scroll;
+  position: sticky;
+  top: 50px;
 }
 ::-webkit-scrollbar {
   width: 5px;
@@ -56,6 +58,4 @@
   border-radius: 50%;
   object-fit: cover;
   margin-right: 10px;
-}
-.sidebarFrinedName {
 }
