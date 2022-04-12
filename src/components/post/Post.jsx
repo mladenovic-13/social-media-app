@@ -1,21 +1,34 @@
 import "./post.css";
 import { MoreVert } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { format } from "timeago.js";
 import { Link } from "react-router-dom";
-
+import { AuthContext } from "../../context/AuthContext";
 export default function Post({ post }) {
   const [like, setLike] = useState(post.likes.length);
   const [isLiked, setIsLiked] = useState(false);
+  // used for post's user profile
   const [user, setUser] = useState({});
+  // current loged user
+  const { user: currentUser } = useContext(AuthContext);
 
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
-  const likeHandler = () => {
+  const likeHandler = async () => {
+    try {
+      await axios.put(`/posts/${post._id}/like`, { userId: currentUser._id });
+    } catch (error) {
+      console.log(error);
+    }
+
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
   };
+
+  useEffect(() => {
+    setIsLiked(post.likes.includes(currentUser._id));
+  }, [post.likes, currentUser._id]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,13 +66,7 @@ export default function Post({ post }) {
             <img
               src={PF + "like.png"}
               alt=""
-              className="likeIcon"
-              onClick={likeHandler}
-            />
-            <img
-              src={PF + "heart.png"}
-              alt=""
-              className="likeIcon"
+              className={!isLiked ? "likeIcon" : "likeIcon rotateimg180"}
               onClick={likeHandler}
             />
             <span className="postLikeCounter">{like} people like it</span>
